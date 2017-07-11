@@ -121,9 +121,12 @@ defmodule Comeonin do
     end
     {:error, "invalid user-identifier"}
   end
+  def check_pass(%{password_hash: hash} = user, password, crypto, opts) do
+    crypto.verify_hash(hash, password, opts) and
+    {:ok, user} || {:error, "invalid password"}
+  end
   def check_pass(user, password, crypto, opts) do
-    hash_name = Keyword.get(opts, :hash_name, :password_hash)
-    %{^hash_name => hash} = user
+    hash = user[opts[:hash_name]]
     crypto.verify_hash(hash, password, opts) and
     {:ok, user} || {:error, "invalid password"}
   end
